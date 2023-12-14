@@ -105,8 +105,8 @@ while (mergeablePairs.length) {
 	// const pair = mergeablePairs.pop()!;
 	// const pair = mergeablePairs.shift()!;
 	const randomIndex = Math.floor(Math.random() * mergeablePairs.length);
-	mergeablePairs.splice(randomIndex, 1);
 	const pair = mergeablePairs[randomIndex];
+	mergeablePairs.splice(randomIndex, 1);
 
 	merges.push(pair);
 
