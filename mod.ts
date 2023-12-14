@@ -77,8 +77,6 @@ function getMergeablePairs(words: string[]) {
 		}
 	}
 
-	console.log("minimal pairs", minimalPairs.size);
-
 	const mergeable = new Set<string>();
 
 	for (const s1 of foundSyllables) {
@@ -92,8 +90,6 @@ function getMergeablePairs(words: string[]) {
 		}
 	}
 
-	console.log("mergeable", mergeable.size);
-
 	return [...mergeable].filter(p => !p.startsWith("n ") && !p.endsWith(" n"));
 }
 
@@ -102,7 +98,16 @@ const merges: string[] = [];
 const mergeablePairs = getMergeablePairs(words);
 
 while (mergeablePairs.length) {
-	const pair = mergeablePairs.shift()!;
+	// There are many ways to choose a pair to merge. For some reason, pop and
+	// shift seem to produce the best results. Random will consistently produce
+	// way more than 12 groups.
+
+	// const pair = mergeablePairs.pop()!;
+	// const pair = mergeablePairs.shift()!;
+	const randomIndex = Math.floor(Math.random() * mergeablePairs.length);
+	mergeablePairs.splice(randomIndex, 1);
+	const pair = mergeablePairs[randomIndex];
+
 	merges.push(pair);
 
 	const [a, b] = pair.split(" ");
@@ -120,7 +125,6 @@ while (mergeablePairs.length) {
 	}
 
 	const newMergeablePairs = getMergeablePairs(mergedWords);
-	console.log(newMergeablePairs.length);
 
 	for (let i = 0; i < mergeablePairs.length; i++) {
 		if (!newMergeablePairs.includes(mergeablePairs[i])) {
@@ -163,4 +167,27 @@ for (const merge of merges) {
 	}
 }
 
-console.log(groups.map(g => g.join(" ")).join("\n"));
+console.log("\n" + groups.length + " groups\n");
+
+console.log(groups.map(g => g.join(" ") + " (" + g.length + ")").join("\n"));
+
+let remainingSyllables: string[] = [];
+
+for (const c of "jklmnpstw".split("").concat([""])) {
+	for (const v of "aeiou") {
+		remainingSyllables.push(c + v);
+	}
+}
+
+const usedSyllables = [...new Set(groups.flat())];
+
+remainingSyllables = remainingSyllables.filter(
+	s => !usedSyllables.includes(s) && !["wu", "wo", "ji", "ti"].includes(s)
+);
+
+console.log(
+	remainingSyllables.join(" ") +
+		" (" +
+		remainingSyllables.length +
+		" remaining)"
+);
